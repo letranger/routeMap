@@ -71,7 +71,9 @@ if st.button("規劃路徑"):
                 end_name = start_location if i == len(best_route) - 1 else waypoints_selected[i]
 
                 # 顯示路徑，並在地址後加上地點名稱
-                st.write(f"{pathNo: } 從 {start_address} ({start_name}) 到 {end_address} ({end_name}), 距離: {leg['distance']['text']}, 預計時間: {leg['duration']['text']}")
+                st.write(f"{pathNo: } 從 {start_name} 到 {end_name}, 距離: {leg['distance']['text']}, 預計時間: {leg['duration']['text']}")
+                # 原版/顯示路徑，並在地址後加上地點名稱
+#                st.write(f"{pathNo: } 從 {start_address} ({start_name}) 到 {end_address} ({end_name}), 距離: {leg['distance']['text']}, 預計時間: {leg['duration']['text']}")
                 pathNo += 1
 
             # 顯示總行程時間
