@@ -1,5 +1,6 @@
 import streamlit as st
 import googlemaps
+from urllib.parse import quote  # 用於進行 URL 編碼
 
 # 輸入你的 Google Maps API key
 API_KEY = 'AIzaSyAwcDGCz-A7YKAPEj40bdEYASdn_jkhOAI'
@@ -36,11 +37,20 @@ if st.button("規劃路徑"):
             mode="driving",
             waypoints=waypoints_selected,
             optimize_waypoints=True,
-            language="zh-TW"  # 設置語言為繁體中文
+            language="zh-TW",
+            departure_time="now",  # 指定當前時間出發
+            traffic_model="best_guess"  # 使用交通模型進行最佳估算
         )
+#        directions_result = gmaps.directions(
+#            origin=start_location,
+#            destination=start_location,  # 回到起點
+#            mode="driving",
+#            waypoints=waypoints_selected,
+#            optimize_waypoints=True,
+#            language="zh-TW"  # 設置語言為繁體中文
+#        )
 
         # 檢查是否有返回結果
-
         if directions_result and len(directions_result) > 0:
             best_route = directions_result[0]['legs']
             total_duration = sum([leg['duration']['value'] for leg in best_route])  # 總時間（以秒為單位）
@@ -63,8 +73,24 @@ if st.button("規劃路徑"):
                 # 顯示路徑，並在地址後加上地點名稱
                 st.write(f"{pathNo: } 從 {start_address} ({start_name}) 到 {end_address} ({end_name}), 距離: {leg['distance']['text']}, 預計時間: {leg['duration']['text']}")
                 pathNo += 1
+
             # 顯示總行程時間
             st.write(f"\n總行程時間為: {total_duration_in_minutes:.2f} 分鐘")
+
+            # 生成 Google Maps 路徑 URL
+            base_url = "https://www.google.com/maps/dir/?api=1"
+            origin_param = f"origin={quote(start_location)}"
+            destination_param = f"destination={quote(start_location)}"
+
+            # 對經過地點進行 URL 編碼
+            waypoints_param = f"&waypoints={'|'.join([quote(loc) for loc in waypoints_selected])}" if waypoints_selected else ""
+
+            # 生成最終 URL
+            map_url = f"{base_url}&{origin_param}&{destination_param}{waypoints_param}&travelmode=driving"
+
+            # 顯示 Google Maps 的鏈接
+            st.markdown(f"[在 Google Maps 中查看路徑]({map_url})")
+
         else:
             st.error("無法找到路徑，請檢查輸入的地點是否正確。")
 
