@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+import streamlit as st
+import googlemaps
+from urllib.parse import quote  # 用於進行 URL 編碼
 
 # 輸入你的 Google Maps API key
 API_KEY = 'AIzaSyAwcDGCz-A7YKAPEj40bdEYASdn_jkhOAI'
@@ -23,21 +25,22 @@ locations = [
     "7-ELEVEN 三勝門市",
     "後安福興宮",
     "霄仁厝永福宮",
-    "錦利商店",
     "許厝寮 福興宮",
     "三盛社區公園",
     "阿媽紀念公園",
     "台塑石油 春田加油站",
     "雲都商務飯店",
-    "TOYOTA麥寮保修站",
-    "羅記民雄肉包",
 ]
 locations = sorted(locations)
+
 # Streamlit 標題
 st.title("最佳路徑規劃")
 
 # 讓使用者選擇起點
-start_location = st.selectbox("選擇起點", locations)
+#start_location = st.selectbox("選擇起點", locations)
+#
+start_location = "麥寮定點倒垃圾"
+st.write(f'出發/終點: {start_location}')
 
 # 讓使用者選擇要經過的地點
 waypoints_selected = st.multiselect("選擇要經過的地點", [loc for loc in locations if loc != start_location])
@@ -52,8 +55,18 @@ if st.button("規劃路徑"):
             mode="driving",
             waypoints=waypoints_selected,
             optimize_waypoints=True,
-            language="zh-TW"  # 設置語言為繁體中文
+            language="zh-TW",
+            departure_time="now",  # 指定當前時間出發
+            traffic_model="best_guess"  # 使用交通模型進行最佳估算
         )
+#        directions_result = gmaps.directions(
+#            origin=start_location,
+#            destination=start_location,  # 回到起點
+#            mode="driving",
+#            waypoints=waypoints_selected,
+#            optimize_waypoints=True,
+#            language="zh-TW"  # 設置語言為繁體中文
+#        )
 
         # 檢查是否有返回結果
         if directions_result and len(directions_result) > 0:
@@ -76,7 +89,9 @@ if st.button("規劃路徑"):
                 end_name = start_location if i == len(best_route) - 1 else waypoints_selected[i]
 
                 # 顯示路徑，並在地址後加上地點名稱
-                st.write(f"{pathNo: } 從 {start_address} ({start_name}) 到 {end_address} ({end_name}), 距離: {leg['distance']['text']}, 預計時間: {leg['duration']['text']}")
+                st.write(f"{pathNo: } 從 {start_name} 到 {end_name}, 距離: {leg['distance']['text']}, 預計時間: {leg['duration']['text']}")
+                # 原版/顯示路徑，並在地址後加上地點名稱
+#                st.write(f"{pathNo: } 從 {start_address} ({start_name}) 到 {end_address} ({end_name}), 距離: {leg['distance']['text']}, 預計時間: {leg['duration']['text']}")
                 pathNo += 1
 
             # 顯示總行程時間
@@ -84,11 +99,11 @@ if st.button("規劃路徑"):
 
             # 生成 Google Maps 路徑 URL
             base_url = "https://www.google.com/maps/dir/?api=1"
-            origin_param = f"origin={start_location}"
-            destination_param = f"destination={start_location}"
+            origin_param = f"origin={quote(start_location)}"
+            destination_param = f"destination={quote(start_location)}"
 
-            # 加入經過地點
-            waypoints_param = f"&waypoints={'|'.join(waypoints_selected)}" if waypoints_selected else ""
+            # 對經過地點進行 URL 編碼
+            waypoints_param = f"&waypoints={'|'.join([quote(loc) for loc in waypoints_selected])}" if waypoints_selected else ""
 
             # 生成最終 URL
             map_url = f"{base_url}&{origin_param}&{destination_param}{waypoints_param}&travelmode=driving"
