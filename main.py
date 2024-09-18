@@ -3,7 +3,7 @@ import googlemaps
 from urllib.parse import quote  # 用於進行 URL 編碼
 
 # 輸入你的 Google Maps API key
-API_KEY = 'AIzaSyAwcDGCz-A7YKAPEj40bdEYASdn_jkhOAI'
+
 gmaps = googlemaps.Client(key=API_KEY)
 
 # 地點資料（只包含地點名稱）
