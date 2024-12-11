@@ -60,14 +60,6 @@ if st.button("規劃路徑"):
             departure_time="now",  # 指定當前時間出發
             traffic_model="best_guess"  # 使用交通模型進行最佳估算
         )
-#        directions_result = gmaps.directions(
-#            origin=start_location,
-#            destination=start_location,  # 回到起點
-#            mode="driving",
-#            waypoints=waypoints_selected,
-#            optimize_waypoints=True,
-#            language="zh-TW"  # 設置語言為繁體中文
-#        )
 
         # 檢查是否有返回結果
         if directions_result and len(directions_result) > 0:
