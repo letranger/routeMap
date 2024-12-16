@@ -39,7 +39,7 @@ st.title("最佳路徑規劃")
 # 讓使用者選擇起點
 #start_location = st.selectbox("選擇起點", locations)
 #
-start_location = "麥寮定點倒垃圾"
+start_location = "鄉鎮垃圾集中站"
 st.write(f'出發/終點: {start_location}')
 
 # 讓使用者選擇要經過的地點
